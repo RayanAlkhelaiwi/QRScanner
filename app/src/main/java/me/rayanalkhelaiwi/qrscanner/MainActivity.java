@@ -1,44 +1,47 @@
 package me.rayanalkhelaiwi.qrscanner;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
-import android.widget.Button;
-import android.widget.Toast;
+import android.view.Gravity;
 
 import com.google.zxing.Result;
 
+import de.keyboardsurfer.android.widget.crouton.Configuration;
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
 public class MainActivity extends AppCompatActivity implements ZXingScannerView.ResultHandler {
 
     Context context;
+    Style croutonStyle;
+    Configuration croutonConfiguration;
     private ZXingScannerView zXingScannerView;
     private String QRtext = "";
-    private Button scanButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        croutonConfiguration = new Configuration.Builder().setDuration(5000).build();
+
+        croutonStyle = new Style.Builder()
+                .setBackgroundColorValue(Color.parseColor("#000000"))
+                .setGravity(Gravity.CENTER_HORIZONTAL)
+                .setConfiguration(croutonConfiguration)
+                .setHeight(125)
+                .setTextColorValue(Color.parseColor("#ffffff")).build();
+
         context = this;
 
-        scanButton = (Button) findViewById(R.id.scan_button);
+        zXingScannerView = new ZXingScannerView(context);
+        setContentView(zXingScannerView);
 
-        scanButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                zXingScannerView = new ZXingScannerView(context);
-                setContentView(zXingScannerView);
-
-                zXingScannerView.setResultHandler((ZXingScannerView.ResultHandler) context);
-                zXingScannerView.startCamera();
-
-            }
-        });
+        zXingScannerView.setResultHandler((ZXingScannerView.ResultHandler) context);
+        zXingScannerView.startCamera();
     }
 
     @Override
@@ -46,7 +49,12 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
 
         zXingScannerView.stopCamera();
         QRtext = result.getText();
-        Toast.makeText(this, QRtext, Toast.LENGTH_LONG).show();
+        Crouton.showText(this, QRtext, croutonStyle);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
         finish();
     }
 }
