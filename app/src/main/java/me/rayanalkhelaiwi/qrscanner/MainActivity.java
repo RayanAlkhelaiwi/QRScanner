@@ -1,10 +1,13 @@
 package me.rayanalkhelaiwi.qrscanner;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
+import android.widget.Toast;
 
 import com.google.zxing.Result;
 
@@ -50,6 +53,11 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         zXingScannerView.stopCamera();
         QRtext = result.getText();
         Crouton.showText(this, QRtext, croutonStyle);
+
+        ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clip = ClipData.newPlainText(getString(R.string.success_copy), QRtext);
+        clipboard.setPrimaryClip(clip);
+        Toast.makeText(context, R.string.success_copy, Toast.LENGTH_SHORT).show();
     }
 
     @Override
